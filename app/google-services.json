@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "261785100720",
+    "project_id": "confidence-946c9",
+    "storage_bucket": "confidence-946c9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:261785100720:android:ca9cda84901a8bfb473675",
+        "android_client_info": {
+          "package_name": "com.example.confidence"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "261785100720-s2pp2qtnphbo4so1gr48v2lcgaatcugo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8cfZgsL6TMJqlWJf2jQoRuUZ7JWVEc8s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "261785100720-s2pp2qtnphbo4so1gr48v2lcgaatcugo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
