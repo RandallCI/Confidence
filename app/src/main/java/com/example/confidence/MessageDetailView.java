@@ -8,11 +8,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class MessageDetailView extends AppCompatActivity {
-
+    //Views
     TextView detailViewDescription;
     ImageButton dismissDetailView;
+    //Private properties
     private Bundle receivedData;
-    private String receivedStringData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class MessageDetailView extends AppCompatActivity {
         if (receivedData == null) {
             return;
         }
-        receivedStringData = receivedData.getString("SentData");
+        String receivedStringData = receivedData.getString("SentData");
         if (receivedStringData != null) {
             detailViewDescription.setText(receivedStringData);
         }
