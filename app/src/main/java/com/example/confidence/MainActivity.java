@@ -1,5 +1,6 @@
 package com.example.confidence;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -15,21 +17,31 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String TAG = "Quote";
+    public static final String FAILURE = "Failure";
     //Views
     TextView dayTitle;
     ImageButton messageForToday;
     Button newMessage;
     ProgressBar viewProgress;
     //Private properties
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
+    private static final String QUOTE_KEY = "QUOTE_KEY";
+    private final FirebaseStorage storage = FirebaseStorage.getInstance();
+    private DocumentReference documentReference = FirebaseFirestore.getInstance().document("GenericUser/Motivation");
 
     AsyncActivity asyncActivity;
 
@@ -47,6 +59,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                Map<String, Object> dataToSave = new HashMap<String, Object>();
+                dataToSave.put(QUOTE_KEY, "Hello Database");
+                documentReference.set(dataToSave).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG, "Document saved");
+                    }
+                })        .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(FAILURE, "The Document did not saved", e);
+                    }
+                });
             }
         });
 
