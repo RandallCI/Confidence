@@ -4,9 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.content.AsyncQueryHandler;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,12 +13,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -36,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     //Views
     TextView dayTitle;
     ImageButton messageForToday;
+    TextView messageForTodayTextView;
     Button newMessage;
     ProgressBar viewProgress;
     //Private properties
@@ -54,24 +52,13 @@ public class MainActivity extends AppCompatActivity {
         dayTitle = findViewById(R.id.day_title);
         messageForToday = findViewById(R.id.message_for_today);
         newMessage = findViewById(R.id.new_message);
+        messageForTodayTextView = findViewById(R.id.message_for_today_textview);
 
         messageForToday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Map<String, Object> dataToSave = new HashMap<String, Object>();
-                dataToSave.put(QUOTE_KEY, "Hello Database");
-                documentReference.set(dataToSave).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d(TAG, "Document saved");
-                    }
-                })        .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(FAILURE, "The Document did not saved", e);
-                    }
-                });
+                fetchMotivation();
+//               connectToDatabase();
             }
         });
 
@@ -86,7 +73,35 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-   
+
+    private void fetchMotivation() {
+        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    String theMessage = documentSnapshot.getString(QUOTE_KEY);
+                    messageForTodayTextView.setText(theMessage);
+                }
+            }
+        });
+    }
+
+    private void connectToDatabase() {
+        Map<String, Object> dataToSave = new HashMap<String, Object>();
+        dataToSave.put(QUOTE_KEY, "Hello Database");
+        documentReference.set(dataToSave).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d(TAG, "Document saved");
+            }
+        })        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(FAILURE, "The Document did not saved", e);
+            }
+        });
+    }
+
     private void moreInfoOnMessage() {
         Intent detailView = new Intent(MainActivity.this, MessageDetailView.class);
         detailView.putExtra("SentData", "Hello");
