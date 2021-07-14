@@ -1,10 +1,8 @@
 package com.example.confidence;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,22 +12,20 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "Quote";
     public static final String FAILURE = "Failure";
+    private String messageToSave;
     //Views
     TextView dayTitle;
     ImageButton messageForToday;
@@ -38,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar viewProgress;
     //Private properties
     private static final String QUOTE_KEY = "QUOTE_KEY";
-    private final FirebaseStorage storage = FirebaseStorage.getInstance();
-    private DocumentReference documentReference = FirebaseFirestore.getInstance().document("GenericUser/Motivation");
+    private final DocumentReference documentReference = FirebaseFirestore.getInstance().document("GenericUser/Motivation");
+    private SharedPreferences savePreferences;
 
     AsyncActivity asyncActivity;
 
@@ -47,59 +43,51 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        //Get references to the views
         viewProgress = findViewById(R.id.view_progress);
         dayTitle = findViewById(R.id.day_title);
         messageForToday = findViewById(R.id.message_for_today);
         newMessage = findViewById(R.id.new_message);
         messageForTodayTextView = findViewById(R.id.message_for_today_textview);
+        //Instantiate shared preferences.
+        savePreferences = getSharedPreferences("SAVED_QUOTE", Context.MODE_PRIVATE);
 
-        messageForToday.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fetchMotivation();
+        savePreferences = getApplicationContext().getSharedPreferences("SAVED_QUOTE", Context.MODE_PRIVATE);
+        messageToSave = savePreferences.getString("QUOTE", "");
+        messageForTodayTextView.setText(messageToSave);
+
+        messageForToday.setOnClickListener(v -> {
+            moreInfoOnMessage();
+
 //               connectToDatabase();
-            }
         });
 
-        newMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              moreInfoOnMessage();
-            }
-        });
+        newMessage.setOnClickListener(v -> fetchMotivation());
 
         theCurrentDay();
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveTheMessage();
+    }
 
+    //Private methods
     private void fetchMotivation() {
-        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    String theMessage = documentSnapshot.getString(QUOTE_KEY);
-                    messageForTodayTextView.setText(theMessage);
-                }
+        documentReference.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String theMessage = documentSnapshot.getString(QUOTE_KEY);
+                messageForTodayTextView.setText(theMessage);
             }
         });
     }
 
     private void connectToDatabase() {
-        Map<String, Object> dataToSave = new HashMap<String, Object>();
+        Map<String, Object> dataToSave = new HashMap<>();
         dataToSave.put(QUOTE_KEY, "Hello Database");
-        documentReference.set(dataToSave).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                Log.d(TAG, "Document saved");
-            }
-        })        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(FAILURE, "The Document did not saved", e);
-            }
-        });
+        documentReference.set(dataToSave).addOnSuccessListener(unused -> Log.d(TAG, "Document saved")).addOnFailureListener(e -> Log.d(FAILURE, "The Document did not saved", e));
     }
 
     private void moreInfoOnMessage() {
@@ -107,55 +95,60 @@ public class MainActivity extends AppCompatActivity {
         detailView.putExtra("SentData", "Hello");
         startActivity(detailView);
     }
-
+    //Get and display the current day.
     private void theCurrentDay() {
-        @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("dd");
-        Date date = new Date();
-        String dateString = dateFormat.format(date);
-        dayTitle.setText(String.format("Day: %s", dateString));
+        DateFormat dateFormat = DateFormat.getDateInstance();
+        int currentDay = dateFormat.getCalendar().get(Calendar.DATE);
+        dayTitle.setText(String.format("Day: %s", currentDay));
+    }
+    //Save the message on screen for later viewing.
+    private  void saveTheMessage() {
+        messageToSave = messageForTodayTextView.getText().toString();
+        SharedPreferences.Editor editor = savePreferences.edit();
+        editor.putString("QUOTE", messageToSave);
+        editor.apply();
+
     }
 
-
-
-}
 
 //Mark: Types
-@SuppressLint("StaticFieldLeak")
-class AsyncActivity extends AsyncTask<Integer, Integer, String> {
+
+    class AsyncActivity extends AsyncTask<Integer, Integer, String> {
 
 
-
-    @Override
-    protected String doInBackground(Integer... integers) {
-
-        for (int i = 0; i < integers[0]; i++) {
-            publishProgress((i * 100) / integers[0]);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            viewProgress.setVisibility(View.VISIBLE);
         }
 
-        return "Finished";
-    }
+        @Override
+        protected String doInBackground(Integer... integers) {
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
+            try {
+                fetchMotivation();
+            } finally {
 
-    }
+            }
 
 
-    @Override
-    protected void onProgressUpdate(Integer... values) {
-        super.onProgressUpdate(values);
+            return "Finished";
+        }
 
-    }
 
-    @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
+
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+        }
 
     }
 
