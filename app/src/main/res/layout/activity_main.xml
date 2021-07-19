@@ -63,6 +63,7 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/custom_rounded_views"
         android:text="@string/new_message"
+        android:onClick="newMessage"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -30,14 +31,13 @@ public class MainActivity extends AppCompatActivity {
     TextView dayTitle;
     ImageButton messageForToday;
     TextView messageForTodayTextView;
-    Button newMessage;
     ProgressBar viewProgress;
     //Private properties
     private static final String QUOTE_KEY = "QUOTE_KEY";
     private final DocumentReference documentReference = FirebaseFirestore.getInstance().document("GenericUser/Motivation");
     private SharedPreferences savePreferences;
+    private String theMessage;
 
-    AsyncActivity asyncActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
         viewProgress = findViewById(R.id.view_progress);
         dayTitle = findViewById(R.id.day_title);
         messageForToday = findViewById(R.id.message_for_today);
-        newMessage = findViewById(R.id.new_message);
         messageForTodayTextView = findViewById(R.id.message_for_today_textview);
         //Instantiate shared preferences.
         savePreferences = getSharedPreferences("SAVED_QUOTE", Context.MODE_PRIVATE);
@@ -62,11 +61,16 @@ public class MainActivity extends AppCompatActivity {
 //               connectToDatabase();
         });
 
-        newMessage.setOnClickListener(v -> fetchMotivation());
 
         theCurrentDay();
 
     }
+
+    public void newMessage(View view) {
+        AsyncActivity asyncActivity = new AsyncActivity(MainActivity.this);
+        asyncActivity.execute();
+    }
+
 
     @Override
     protected void onPause() {
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private void fetchMotivation() {
         documentReference.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
-                String theMessage = documentSnapshot.getString(QUOTE_KEY);
+                theMessage = documentSnapshot.getString(QUOTE_KEY);
                 messageForTodayTextView.setText(theMessage);
             }
         });
@@ -111,45 +115,45 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-//Mark: Types
+    //Mark: Types
+private static class AsyncActivity extends AsyncTask<Void, Void, Void> {
+        private final WeakReference<MainActivity> weakReference;
 
-    class AsyncActivity extends AsyncTask<Integer, Integer, String> {
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            viewProgress.setVisibility(View.VISIBLE);
+        AsyncActivity(MainActivity mainActivity) {
+            weakReference = new WeakReference<>(mainActivity);
         }
-
-        @Override
-        protected String doInBackground(Integer... integers) {
-
-            try {
-                fetchMotivation();
-            } finally {
-
-            }
-
-
-            return "Finished";
+    //Start the spinner.
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        MainActivity mainActivity = weakReference.get();
+        if (mainActivity == null || mainActivity.isFinishing()) {
+            return;
         }
-
-
-
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-
+        mainActivity.viewProgress.setVisibility(View.VISIBLE);
+    }
+    //Do the background tasks.
+    @Override
+    protected Void doInBackground(Void... voids) {
+        MainActivity mainActivity = weakReference.get();
+        if (mainActivity == null || mainActivity.isFinishing()) {
+            return null;
+        } else {
+            mainActivity.fetchMotivation();
         }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
+        return null;
+    }
+    //Display the returned result.
+    @Override
+    protected void onPostExecute(Void unused) {
+        super.onPostExecute(unused);
+        MainActivity mainActivity = weakReference.get();
+        if (mainActivity != null) {
+//            mainActivity.messageForTodayTextView.setText(mainActivity.theMessage);
+            mainActivity.viewProgress.setVisibility(View.INVISIBLE);
         }
 
     }
+}
 
 }
