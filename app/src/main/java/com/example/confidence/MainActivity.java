@@ -24,8 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+
     public static final String TAG = "Quote";
     public static final String FAILURE = "Failure";
+    private static final String QUOTE_KEY = "QUOTE_KEY";
     private String messageToSave;
     //Views
     TextView dayTitle;
@@ -33,10 +35,10 @@ public class MainActivity extends AppCompatActivity {
     TextView messageForTodayTextView;
     ProgressBar viewProgress;
     //Private properties
-    private static final String QUOTE_KEY = "QUOTE_KEY";
     private final DocumentReference documentReference = FirebaseFirestore.getInstance().document("GenericUser/Motivation");
     private SharedPreferences savePreferences;
     private String theMessage;
+
 
 
     @Override
@@ -60,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
 //               connectToDatabase();
         });
-
+        //Grab the new message from the database.
+        AsyncActivity asyncActivity = new AsyncActivity(MainActivity.this);
+        asyncActivity.execute();
 
         theCurrentDay();
 
@@ -82,8 +86,11 @@ public class MainActivity extends AppCompatActivity {
     private void fetchMotivation() {
         documentReference.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
-                theMessage = documentSnapshot.getString(QUOTE_KEY);
-                messageForTodayTextView.setText(theMessage);
+
+                    theMessage = documentSnapshot.getString(QUOTE_KEY);
+                    messageForTodayTextView.setText(theMessage);
+
+                Log.d(TAG, "fetchMotivation: " + theMessage);
             }
         });
     }
@@ -149,7 +156,6 @@ private static class AsyncActivity extends AsyncTask<Void, Void, Void> {
         super.onPostExecute(unused);
         MainActivity mainActivity = weakReference.get();
         if (mainActivity != null) {
-//            mainActivity.messageForTodayTextView.setText(mainActivity.theMessage);
             mainActivity.viewProgress.setVisibility(View.INVISIBLE);
         }
 
