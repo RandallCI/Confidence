@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -53,22 +54,21 @@ public class MainActivity extends AppCompatActivity {
         dayTitle = findViewById(R.id.day_title);
         messageForToday = findViewById(R.id.message_for_today);
         messageForTodayTextView = findViewById(R.id.message_for_today_textview);
-        //Instantiate shared preferences.
-        savePreferences = getSharedPreferences("SAVED_QUOTE", Context.MODE_PRIVATE);
 
-        savePreferences = getApplicationContext().getSharedPreferences("SAVED_QUOTE", Context.MODE_PRIVATE);
-        messageToSave = savePreferences.getString("QUOTE", "");
-        messageForTodayTextView.setText(messageToSave);
+
+        messageForTodayTextView.setMovementMethod(new ScrollingMovementMethod());
 
         messageForToday.setOnClickListener(v -> {
-            moreInfoOnMessage();
+//            moreInfoOnMessage();
 
 //               connectToDatabase();
         });
         //Get the data from the network if the user is connected to the internet.
         ifNetworkIsAvailableGetMessage(MainActivity.this);
-
+        //Set the current day.
         theCurrentDay();
+        //Display the locally saved message when an internet connection is not available.
+        displayTheSavedMessageFromLocalStorage();
 
     }
 
@@ -84,6 +84,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Private methods
+
+    private void displayTheSavedMessageFromLocalStorage(){
+        //Instantiate shared preferences.
+        savePreferences = getSharedPreferences("SAVED_QUOTE", Context.MODE_PRIVATE);
+        //Get th shared preferences context.
+        savePreferences = getApplicationContext().getSharedPreferences("SAVED_QUOTE", Context.MODE_PRIVATE);
+        //Return the saved message
+        messageToSave = savePreferences.getString("QUOTE", "");
+        //Set the message to the text view
+        messageForTodayTextView.setText(messageToSave);
+    }
 
     //Check for a valid internet connection before trying to fetch data from the database.
     private void ifNetworkIsAvailableGetMessage(Context context) {
