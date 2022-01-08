@@ -21,17 +21,19 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.lang.ref.WeakReference;
-
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
+    //Properties
+    //Static strings
     public static final String TAG = "Quote";
     public static final String FAILURE = "Failure";
     private static final String QUOTE_KEY = "QUOTE_KEY";
+    private static final String THE_MESSAGE = "THE MESSAGE";
+    //storage variables
     private String messageToSave;
     //Views
     TextView dayTitle;
@@ -59,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
         messageForTodayTextView.setMovementMethod(new ScrollingMovementMethod());
 
         messageForToday.setOnClickListener(v -> {
+
+            ifNetworkIsAvailableGetMessage(MainActivity.this);
+
 //            moreInfoOnMessage();
 
 //               connectToDatabase();
@@ -71,9 +76,16 @@ public class MainActivity extends AppCompatActivity {
         displayTheSavedMessageFromLocalStorage();
 
     }
+    //When this button is pressed the message will be saved to the list of messages locally on the device.
+    public void saveMessageToMessageList(View view) {
 
-    public void newMessage(View view) {
-        ifNetworkIsAvailableGetMessage(MainActivity.this);
+
+
+        //After storing the value redirect the user to the list of stored values.
+        Intent intent = new Intent(this, ConfidenceList.class);
+        intent.putExtra(THE_MESSAGE, theMessage);
+        startActivity(intent);
+
     }
 
 
@@ -85,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Private methods
 
-    private void displayTheSavedMessageFromLocalStorage(){
+    private void displayTheSavedMessageFromLocalStorage() {
         //Instantiate shared preferences.
         savePreferences = getSharedPreferences("SAVED_QUOTE", Context.MODE_PRIVATE);
         //Get th shared preferences context.
@@ -96,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         messageForTodayTextView.setText(messageToSave);
     }
 
-    //Check for a valid internet connection before trying to fetch data from the database.
+    //Check for a valid internet connection before trying to fetch data from the database, than display that data .
     private void ifNetworkIsAvailableGetMessage(Context context) {
 
         ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -154,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         int currentDay = dateFormat.getCalendar().get(Calendar.DATE);
         dayTitle.setText(String.format("Day: %s", currentDay));
     }
-    //Save the message on screen for later viewing.
+    //Save the message on screen for later viewing in shared preferences.
     private  void saveTheMessage() {
         messageToSave = messageForTodayTextView.getText().toString();
         SharedPreferences.Editor editor = savePreferences.edit();
@@ -165,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     //Mark: Types
+    //This Async activity will run th fetch message from database function and run a spinner while awaiting the results.
 private static class AsyncActivity extends AsyncTask<Void, Void, Void> {
         private final WeakReference<MainActivity> weakReference;
 
