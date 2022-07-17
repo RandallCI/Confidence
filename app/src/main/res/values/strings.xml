@@ -2,5 +2,7 @@
     <string name="app_name">Confidence</string>
     <string name="day">Day</string>
     <string name="more_detail">More detail</string>
-    <string name="save_message">Save Message</string>
+    <string name="keep_message">Save</string>
+    <string name="new_message">New Message</string>
+    <string name="read_more">Read more</string>
 </resources>

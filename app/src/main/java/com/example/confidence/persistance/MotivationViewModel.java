@@ -19,7 +19,7 @@ public class MotivationViewModel extends AndroidViewModel {
         allMotivations = motivationRepository.getAllMotivations();
     }
 
-    public LiveData<List<Motivation>> getAllWords() { return allMotivations; }
+    public LiveData<List<Motivation>> getAllMotivations() { return allMotivations; }
 
     public void insert(Motivation motivation) {
         motivationRepository.insert(motivation);

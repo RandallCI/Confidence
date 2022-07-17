@@ -12,28 +12,29 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/custom_rounded_views"
         android:text="@string/day"
         android:textAlignment="center"
         android:textSize="34sp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/message_for_today"
+        app:layout_constraintBottom_toTopOf="@+id/view_progress"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
     <ImageButton
-        android:id="@+id/message_for_today"
+        android:id="@+id/more_on_this_message"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/custom_rounded_views"
         app:layout_constraintBottom_toTopOf="@+id/new_message"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,31 +45,31 @@
     <ProgressBar
         android:id="@+id/view_progress"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/message_for_today"
-        app:layout_constraintEnd_toEndOf="@+id/message_for_today"
-        app:layout_constraintStart_toStartOf="@+id/message_for_today"
-        app:layout_constraintTop_toTopOf="@+id/message_for_today" />
+        app:layout_constraintBottom_toTopOf="@+id/more_on_this_message_button"
+        app:layout_constraintEnd_toEndOf="@+id/more_on_this_message"
+        app:layout_constraintStart_toStartOf="@+id/more_on_this_message"
+        app:layout_constraintTop_toTopOf="@+id/more_on_this_message" />
 
     <Button
         android:id="@+id/new_message"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/custom_rounded_views"
         android:onClick="saveMessageToMessageList"
-        android:text="@string/save_message"
-        android:textSize="34sp"
+        android:text="@string/keep_message"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/message_for_today" />
+        app:layout_constraintStart_toEndOf="@+id/retrieve_message"
+        app:layout_constraintTop_toBottomOf="@+id/more_on_this_message" />
 
     <TextView
         android:id="@+id/message_for_today_textview"
@@ -76,15 +77,49 @@
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
         android:background="#0003DAC5"
         android:fontFamily="casual"
         android:scrollbars="vertical"
         android:textFontWeight="1000"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@+id/message_for_today"
-        app:layout_constraintEnd_toEndOf="@+id/message_for_today"
-        app:layout_constraintStart_toStartOf="@+id/message_for_today"
-        app:layout_constraintTop_toTopOf="@+id/message_for_today" />
+        app:layout_constraintBottom_toBottomOf="@+id/view_progress"
+        app:layout_constraintEnd_toEndOf="@+id/more_on_this_message"
+        app:layout_constraintStart_toStartOf="@+id/more_on_this_message"
+        app:layout_constraintTop_toTopOf="@+id/more_on_this_message" />
+
+    <Button
+        android:id="@+id/retrieve_message"
+        android:layout_width="188dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/custom_rounded_views"
+        android:onClick="retrieveMessage"
+        android:text="@string/new_message"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/new_message"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/more_on_this_message"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/more_on_this_message_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/custom_rounded_views"
+        android:onClick="readMore"
+        android:text="@string/read_more"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/new_message"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

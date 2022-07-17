@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.confidence.persistance.MotivationViewModel;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -26,24 +27,27 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class MainActivity extends AppCompatActivity {
     //Properties
     //Static strings
     public static final String TAG = "Quote";
     public static final String FAILURE = "Failure";
     private static final String QUOTE_KEY = "QUOTE_KEY";
-    private static final String THE_MESSAGE = "THE MESSAGE";
+    static final String THE_MESSAGE = "THE MESSAGE";
     //storage variables
-    private String messageToSave;
+    private String messageToSave = "";
     //Views
     TextView dayTitle;
-    ImageButton messageForToday;
+    ImageButton messageImage;
     TextView messageForTodayTextView;
     ProgressBar viewProgress;
     //Private properties
     private final DocumentReference documentReference = FirebaseFirestore.getInstance().document("GenericUser/Motivation");
     private SharedPreferences savePreferences;
     private String theMessage;
+    //Create a word view model object.
+    MotivationViewModel motivationViewModel;
 
 
 
@@ -54,20 +58,14 @@ public class MainActivity extends AppCompatActivity {
         //Get references to the views
         viewProgress = findViewById(R.id.view_progress);
         dayTitle = findViewById(R.id.day_title);
-        messageForToday = findViewById(R.id.message_for_today);
+        messageImage = findViewById(R.id.more_on_this_message);
         messageForTodayTextView = findViewById(R.id.message_for_today_textview);
-
-
+        //Make message for today text view scrollable.
         messageForTodayTextView.setMovementMethod(new ScrollingMovementMethod());
 
-        messageForToday.setOnClickListener(v -> {
 
-            ifNetworkIsAvailableGetMessage(MainActivity.this);
+        messageImage.setImageResource(R.drawable.my_image);
 
-//            moreInfoOnMessage();
-
-//               connectToDatabase();
-        });
         //Get the data from the network if the user is connected to the internet.
         ifNetworkIsAvailableGetMessage(MainActivity.this);
         //Set the current day.
@@ -76,14 +74,16 @@ public class MainActivity extends AppCompatActivity {
         displayTheSavedMessageFromLocalStorage();
 
     }
+
+
+
     //When this button is pressed the message will be saved to the list of messages locally on the device.
+    //Th user will than be redirected to the message list view.
     public void saveMessageToMessageList(View view) {
-
-
 
         //After storing the value redirect the user to the list of stored values.
         Intent intent = new Intent(this, ConfidenceList.class);
-        intent.putExtra(THE_MESSAGE, theMessage);
+        intent.putExtra(THE_MESSAGE, messageToSave);
         startActivity(intent);
 
     }
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                     asyncActivity.execute();
                 }
             } else {
-               Toast toastB = Toast.makeText(this, "Hello, please connect to an internet connection to retrieve messages", Toast.LENGTH_LONG);
+               Toast toastB = Toast.makeText(this, "Hello, please connect to the internet in order to retrieve messages", Toast.LENGTH_LONG);
 
                toastB.show();
             }
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void moreInfoOnMessage() {
         Intent detailView = new Intent(MainActivity.this, MessageDetailView.class);
-        detailView.putExtra("SentData", "Hello");
+        detailView.putExtra("SentData", messageToSave);
         startActivity(detailView);
     }
     //Get and display the current day.
@@ -173,6 +173,14 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("QUOTE", messageToSave);
         editor.apply();
 
+    }
+    //This button triggers a call for a new message from the cloud storage.
+    public void retrieveMessage(View view) {
+        ifNetworkIsAvailableGetMessage(MainActivity.this);
+    }
+
+    public void readMore(View view) {
+        moreInfoOnMessage();
     }
 
 

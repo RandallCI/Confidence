@@ -1,16 +1,16 @@
 package com.example.confidence;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 public class MessageDetailView extends AppCompatActivity {
     //Views
-    TextView detailViewDescription;
-    ImageButton dismissDetailView;
+    TextView detailViewContent;
+    ImageButton messageImage;
     //Private properties
     private Bundle receivedData;
 
@@ -20,10 +20,13 @@ public class MessageDetailView extends AppCompatActivity {
         setContentView(R.layout.activity_message_detail_view);
 
         receivedData = getIntent().getExtras();
-        detailViewDescription = findViewById(R.id.detail_page_title);
-
-        dismissDetailView = findViewById(R.id.dismiss_detail_view);
-        dismissDetailView.setOnClickListener(new View.OnClickListener() {
+        detailViewContent = findViewById(R.id.detail_page_content);
+        //Excess the image button.
+        messageImage = findViewById(R.id.detail_view_image);
+        //Place animage in the image button.
+        messageImage.setImageResource(R.drawable.my_image);
+        //Set an on click listener to the image button
+        messageImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismissDetailViewAndHandleDetails();
@@ -40,7 +43,7 @@ public class MessageDetailView extends AppCompatActivity {
         }
         String receivedStringData = receivedData.getString("SentData");
         if (receivedStringData != null) {
-            detailViewDescription.setText(receivedStringData);
+            detailViewContent.setText(receivedStringData);
         }
     }
 

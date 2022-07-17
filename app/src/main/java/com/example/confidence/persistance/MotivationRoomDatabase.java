@@ -33,10 +33,9 @@ public abstract class MotivationRoomDatabase extends RoomDatabase {
             }
         }
         return INSTANCE;
-
-
     }
-    private static Callback sRoomDatabaseCallback = new Callback() {
+
+    private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
@@ -49,12 +48,11 @@ public abstract class MotivationRoomDatabase extends RoomDatabase {
                 MotivationDAO dao = INSTANCE.wordDAO();
                 dao.deleteAll();
 
-                Motivation motivation = new Motivation("Hello");
+                Motivation motivation = new Motivation("Well done randyboy");
                 dao.insert(motivation);
-                motivation = new Motivation("World");
-                dao.insert(motivation);
+                Motivation motivationTwo = new Motivation("Thank Yu LORD GOD!");
+                dao.insert(motivationTwo);
             });
         }
     };
-
 }
