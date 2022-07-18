@@ -1,6 +1,7 @@
 package com.example.confidence;
 
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -20,10 +21,13 @@ public class MessageDetailView extends AppCompatActivity {
         setContentView(R.layout.activity_message_detail_view);
 
         receivedData = getIntent().getExtras();
+        //Get the detail text view.
         detailViewContent = findViewById(R.id.detail_page_content);
+        //Set scrollability to the content text view.
+        detailViewContent.setMovementMethod(new ScrollingMovementMethod());
         //Excess the image button.
         messageImage = findViewById(R.id.detail_view_image);
-        //Place animage in the image button.
+        //Place an image in the image button.
         messageImage.setImageResource(R.drawable.my_image);
         //Set an on click listener to the image button
         messageImage.setOnClickListener(new View.OnClickListener() {
