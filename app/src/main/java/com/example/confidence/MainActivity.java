@@ -1,5 +1,6 @@
 package com.example.confidence;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.confidence.persistance.MotivationViewModel;
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     private String theMessage;
     //Create a word view model object.
     MotivationViewModel motivationViewModel;
+    //Create the request code.
+    private int motivationRequestCode = 1;
 
 
 
@@ -75,6 +79,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == motivationRequestCode && resultCode == Activity.RESULT_OK) {
+
+        }
+
+
+    }
 
 
     //When this button is pressed the message will be saved to the list of messages locally on the device.

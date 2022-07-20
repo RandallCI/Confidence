@@ -9,7 +9,7 @@ import java.util.List;
 
 public class MotivationViewModel extends AndroidViewModel {
 
-    private MotivationRepository motivationRepository;
+    private final MotivationRepository motivationRepository;
 
     private final LiveData<List<Motivation>> allMotivations;
 
